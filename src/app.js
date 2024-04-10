@@ -10,6 +10,7 @@ app.use(morgan('dev'))
 app.use(helmet())
 app.use(compression())
 // init DB
+require('./dbs/init.mongodb.lvl')
 // init Router
 // handler error
 
