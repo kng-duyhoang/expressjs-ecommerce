@@ -19,8 +19,6 @@ class Database {
     mongoose.connect(connectString, {
       maxPoolSize: 50
     }).then( _ => {
-      const { countConnect } = require('../helpers/check.connect')
-      console.log(countConnect());
     })
     .catch( err => console.log(err))
 

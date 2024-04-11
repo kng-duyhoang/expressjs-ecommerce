@@ -9,18 +9,15 @@ const app = express()
 app.use(morgan('dev'))
 app.use(helmet())
 app.use(compression())
+app.use(express.json())
+app.use(express.urlencoded({
+    extented: true
+}));
 // init DB
 require('./dbs/init.mongodb.lvl')
+
 // init Router
+app.use('/', require('./routes'))
 // handler error
-
-
-app.get('/', (req, res, next) => {
-  const msg = 'aaaaaa'
-  return res.status(200).json({
-    message: "success",
-    msg: msg.repeat(100000)
-  })
-})
 
 module.exports = app
