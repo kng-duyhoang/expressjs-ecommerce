@@ -1,8 +1,9 @@
 'use strict'
 
 const mongoose = require('mongoose')
+const {db: {usename, url, password}} = require('../config/config.mongodb')
 
-const connectString = `mongodb+srv://hoanggghck:L9915173l@test.wf0nqom.mongodb.net/`
+const connectString = `mongodb+srv://${usename}:${password}@${url}/`
 
 class Database {
   constructor() {
