@@ -18,6 +18,14 @@ require('./dbs/init.mongodb.lvl')
 
 // init Router
 app.use('/', require('./routes'))
-// handler error
+
+app.use((err, req, res, next) => {
+    const statusCode = err.status || 500
+    return res.status(statusCode).json({
+        status: 'error',
+        code: statusCode,
+        message: err.message
+    })
+})
 
 module.exports = app
