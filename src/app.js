@@ -11,7 +11,7 @@ app.use(helmet())
 app.use(compression())
 app.use(express.json())
 app.use(express.urlencoded({
-    extented: true
+    extended: true
 }));
 // init DB
 require('./dbs/init.mongodb.lvl')
