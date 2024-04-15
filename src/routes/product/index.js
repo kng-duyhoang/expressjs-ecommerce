@@ -10,6 +10,7 @@ const { authentication } = require('../../auth/authUtils')
 
 router.use(authentication)
 router.post('/create', asyncHandle(productController.createProduct))
+router.post('/create2', asyncHandle(productController.createProduct2))
 
 
 module.exports = router
