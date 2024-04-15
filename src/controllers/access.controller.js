@@ -5,6 +5,12 @@ const AccessService = require("../services/access.service");
 const {Created, Success} = require("../core/success.response")
 
 class AccessController {
+    logOut = async (req, res, next) => {
+        new Success({
+            message: 'Logout Success',
+            metadata: await AccessService.logOut({keyStore: req.keyStore})
+        }).send(res)
+    }
     logIn = async (req, res, next) => {
         new Success({
             message: 'Login Success',

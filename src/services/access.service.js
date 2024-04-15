@@ -32,7 +32,6 @@ class AccessService {
         const shopFind = await shopModel.findOne({ email }).lean()
         if (!shopFind) throw new BadRequestError('Shop not registed!')
         // 2
-        console.log(`shopFind`, shopFind);
         const match = bcrypt.compare(password, shopFind.password)
         if (!match) throw new AuthFailureError('Authen Error')
         // 3
@@ -50,6 +49,11 @@ class AccessService {
             shop: getInforData({ fields: ['_id', 'name', 'email'], object: shopFind }),
             tokens
         }
+    }
+
+    static logOut = async ({keyStore}) => { 
+        const delKey = await KeyTokenService.removeKeyByID(keyStore._id)
+        return delKey
     }
 
     static signUp = async ({ name, email, password }) => {
@@ -85,11 +89,8 @@ class AccessService {
             const tokens = await createTokenPair({ userID: newShop._id, email }, publicKey, privateKey)
 
             return {
-                code: 201,
-                metadata: {
-                    shop: getInforData({ fields: ['_id', 'name', 'email'], object: newShop }),
-                    tokens
-                }
+                shop: getInforData({ fields: ['_id', 'name', 'email'], object: newShop }),
+                tokens
             }
         }
     }
