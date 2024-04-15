@@ -28,8 +28,8 @@ const keyTokenSchema = new Schema({
         required: true
     }
 }, {
-    collection: DOCUMENT_NAME,
+    collection: COLLECTION_NAME,
     timestamps: true
 })
 
-module.exports = model(COLLECTION_NAME, keyTokenSchema)
+module.exports = model(DOCUMENT_NAME, keyTokenSchema)
