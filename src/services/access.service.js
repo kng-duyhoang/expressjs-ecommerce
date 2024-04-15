@@ -4,12 +4,11 @@ const crypto = require('node:crypto')
 
 const shopModel = require("../models/shop.model");
 const KeyTokenService = require('./keyToken.service');
-const { createTokenPair } = require('../auth/authUtils');
+const { createTokenPair, verifyJWT } = require('../auth/authUtils');
 const { getInforData } = require('../utils');
-const { BadRequestError, ConflictRequestError, AuthFailureError } = require('../core/error.response');
-const { findShopByEmail } = require('./shop.service');
+const { BadRequestError, AuthFailureError, ForbiddenError } = require('../core/error.response');
 const { generateToken } = require('../utils/token');
-const { token } = require('morgan');
+const { findShopByEmail } = require('./shop.service');
 
 const RoleShop = {
     SHOP: "SHOP",
@@ -19,6 +18,45 @@ const RoleShop = {
 }
 
 class AccessService {
+    /* 
+        chech Token used
+    */
+
+    static handleRefreshToken = async (refreshToken) => {
+        const foundToken = await KeyTokenService.findByRefreshTokenUsed(refreshToken);
+        console.log(foundToken);
+        if (foundToken) {
+            // decode
+            const {userID} = await verifyJWT(refreshToken, foundToken.privateKey)
+            // xoa Token
+            await KeyTokenService.deleteKeyByUserID(userID)
+            throw new ForbiddenError('Something wrong with token!!!')
+        }
+        // no ?
+        const holderToken = await KeyTokenService.findByRefreshToken(refreshToken)
+        if (!holderToken) throw new AuthFailureError('Shop not registed 1')
+        // verify Token
+        const {userId, email} = await verifyJWT(refreshToken, holderToken.privateKey)
+        const foundShop = await findShopByEmail({email})
+        if (!foundShop) throw new AuthFailureError('Shop not registed 2')
+        // Create mot cap token moi
+        const tokens = await createTokenPair({ userID: foundShop._id, email }, holderToken.publicKey, holderToken.privateKey)
+        // update tokens
+        await holderToken.updateOne({
+            $set: {
+                
+                refreshToken: tokens.refreshToken
+            },
+            $addToSet: {
+                refreshTokensUsed: refreshToken
+            }
+        })
+
+        return {
+            user: {userId, email},
+            tokens
+        }
+    }
 
     /*
         1. check Email
@@ -32,7 +70,7 @@ class AccessService {
         const shopFind = await shopModel.findOne({ email }).lean()
         if (!shopFind) throw new BadRequestError('Shop not registed!')
         // 2
-        const match = bcrypt.compare(password, shopFind.password)
+        const match = await bcrypt.compare(password, shopFind.password)
         if (!match) throw new AuthFailureError('Authen Error')
         // 3
         const {privateKey, publicKey} = generateToken()
