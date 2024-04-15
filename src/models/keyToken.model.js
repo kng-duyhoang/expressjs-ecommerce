@@ -19,10 +19,14 @@ const keyTokenSchema = new Schema({
         type: String,
         required: true
     },
-    refreshToken: {
-        type: Array,
+    refreshTokensUsed: {
+        type: Array, // da dc su dung
         default: [],
     },
+    refreshToken: {
+        type: String,
+        required: true
+    }
 }, {
     collection: DOCUMENT_NAME,
     timestamps: true
