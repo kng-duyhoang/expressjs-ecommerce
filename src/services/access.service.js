@@ -22,30 +22,23 @@ class AccessService {
         chech Token used
     */
 
-    static handleRefreshToken = async (refreshToken) => {
-        const foundToken = await KeyTokenService.findByRefreshTokenUsed(refreshToken);
-        console.log(foundToken);
-        if (foundToken) {
-            // decode
-            const {userID} = await verifyJWT(refreshToken, foundToken.privateKey)
-            // xoa Token
+    static handleRefreshToken = async ({ keyStore, user, refreshToken }) => {
+        const { userID, email } = user
+        if (keyStore.refreshTokensUsed.includes(refreshToken)) {
             await KeyTokenService.deleteKeyByUserID(userID)
-            throw new ForbiddenError('Something wrong with token!!!')
+            throw new ForbiddenError('Something wrong happend!! Pls relogin')
         }
-        // no ?
-        const holderToken = await KeyTokenService.findByRefreshToken(refreshToken)
-        if (!holderToken) throw new AuthFailureError('Shop not registed 1')
-        // verify Token
-        const {userId, email} = await verifyJWT(refreshToken, holderToken.privateKey)
-        const foundShop = await findShopByEmail({email})
+        if (keyStore.refreshToken !== refreshToken) throw new AuthFailureError('Shop not registed')
+
+        const foundShop = await findShopByEmail({ email })
         if (!foundShop) throw new AuthFailureError('Shop not registed 2')
-        // Create mot cap token moi
-        const tokens = await createTokenPair({ userID: foundShop._id, email }, holderToken.publicKey, holderToken.privateKey)
-        // update tokens
-        await holderToken.updateOne({
+
+
+        const tokens = await createTokenPair({ userID: foundShop._id, email }, keyStore.publicKey, keyStore.privateKey)
+        await keyStore.updateOne({
             $set: {
-                
-                refreshToken: tokens.refreshToken
+                refreshToken: tokens.refreshToken,
+                accessToken: tokens.accessToken
             },
             $addToSet: {
                 refreshTokensUsed: refreshToken
@@ -53,7 +46,7 @@ class AccessService {
         })
 
         return {
-            user: {userId, email},
+            user,
             tokens
         }
     }
@@ -73,7 +66,7 @@ class AccessService {
         const match = await bcrypt.compare(password, shopFind.password)
         if (!match) throw new AuthFailureError('Authen Error')
         // 3
-        const {privateKey, publicKey} = generateToken()
+        const { privateKey, publicKey } = generateToken()
         // 4
         const tokens = await createTokenPair({ userID: shopFind._id, email }, publicKey, privateKey)
 
@@ -89,7 +82,7 @@ class AccessService {
         }
     }
 
-    static logOut = async ({keyStore}) => { 
+    static logOut = async ({ keyStore }) => {
         const delKey = await KeyTokenService.removeKeyByID(keyStore._id)
         return delKey
     }
@@ -109,7 +102,7 @@ class AccessService {
         if (newShop) {
             // create private key, publickey
 
-            const {privateKey, publicKey} = generateToken()
+            const { privateKey, publicKey } = generateToken()
 
             const keyStore = await KeyTokenService.createKeyToken({
                 userID: newShop._id,
