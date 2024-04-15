@@ -1,6 +1,6 @@
 'use strict'
 
-const ProductFactory = require("../services/product.service.xxx");
+const productFactory = require("../services/product.service.xxx");
 
 const {Created, Success} = require("../core/success.response")
 
@@ -12,6 +12,51 @@ class ProductController {
                 ...req.body,
                 product_shop: req.user.userID
             })
+        }).send(res)
+    }
+
+    publishProduct = async (req, res, next) => {
+        new Success({
+            message: 'publish Success',
+            metadata: await productFactory.publishProductByShop({
+                product_shop: req.user.userID,
+                product_id: req.params.id
+            })
+        }).send(res)
+    }
+
+    unpublishProduct = async (req, res, next) => {
+        new Success({
+            message: 'Unpublish Success',
+            metadata: await productFactory.unPublishProductByShop({
+                product_shop: req.user.userID,
+                product_id: req.params.id
+            })
+        }).send(res)
+    }
+
+    getAllDarftForShop = async (req, res, next) => {
+        new Success({
+            message: 'get Success',
+            metadata: await productFactory.findAllDraftForShop({
+                product_shop: req.user.userID
+            })
+        }).send(res)
+    }
+
+    getAllPublishForShop = async (req, res, next) => {
+        new Success({
+            message: 'get Success',
+            metadata: await productFactory.findAllPublishForShop({
+                product_shop: req.user.userID
+            })
+        }).send(res)
+    }
+
+    getListProductsByKeyword = async (req, res, next) => {
+        new Success({
+            message: 'get Success',
+            metadata: await productFactory.searchProductsByKeyword(req.params)
         }).send(res)
     }
 }

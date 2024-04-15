@@ -2,6 +2,8 @@
 
 const {model, Schema} = require("mongoose");
 
+const slugify = require('slugify')
+
 const DOCUMENT_NAME = 'Product'
 const COLLECTION_NAME= 'Products'
 
@@ -36,11 +38,31 @@ const productSchema = new Schema({
         type: Schema.Types.Mixed,
         required: true
     },
+    product_slug: {
+        type: String
+    },
+    // More
+    product_rating: {
+        type: Number,
+        default: 4.5,
+        min: [1, 'Rating must be above 1.0'],
+        max: [5, 'Rating must be under 5.0'],
+        set: (val) => Math.round(val * 10) / 10
+    },
+    product_variations: {type: Array, default: []},
+    isDraft: {type: Boolean, default: true, index: true, select: false}, // Select ko show ra khi minh FindOne 
+    isPublish: {type: Boolean, default: false, index: true, select: false},
 }, {
     timestamps: true,
     collection: COLLECTION_NAME
 })
-
+// Middleware
+// create index for search
+productSchema.index({product_name: 'text', product_description: 'text'})
+productSchema.pre('save', async function( next ) {
+    this.product_slug = slugify(this.product_name, {lower: true})
+    next();
+})
 const clothingSchema = new Schema({
     brand: {type: String, require: true},
     size: String,

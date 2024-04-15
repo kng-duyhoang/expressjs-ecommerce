@@ -7,10 +7,16 @@ const productController = require('../../controllers/product.controller')
 const asyncHandle = require('../../helpers/asyncHandler')
 const { authentication } = require('../../auth/authUtils')
 
+router.get('/search/:keySearch', asyncHandle(productController.getListProductsByKeyword))
 
 router.use(authentication)
+// POST
 router.post('/create', asyncHandle(productController.createProduct))
-router.post('/create2', asyncHandle(productController.createProduct2))
+router.post('/publish/:id', asyncHandle(productController.publishProduct))
+router.post('/unpublish/:id', asyncHandle(productController.unpublishProduct))
+// GET
+router.get('/draft/all', asyncHandle(productController.getAllDarftForShop))
+router.get('/publish/all', asyncHandle(productController.getAllPublishForShop))
 
 
 module.exports = router
