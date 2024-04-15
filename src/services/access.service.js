@@ -24,7 +24,6 @@ class AccessService {
 
     static handleRefreshToken = async (refreshToken) => {
         const foundToken = await KeyTokenService.findByRefreshTokenUsed(refreshToken);
-        console.log(foundToken);
         if (foundToken) {
             // decode
             const {userID} = await verifyJWT(refreshToken, foundToken.privateKey)
@@ -56,6 +55,35 @@ class AccessService {
             user: {userId, email},
             tokens
         }
+    }
+
+    static handleRefreshTokenV2 = async ({keyStore, user, refreshToken}) => {
+        const {userId, email} = user
+        if (keyStore.refreshToken.includes(refreshToken)) {
+            await KeyTokenService.deleteKeyByUserID(userId)
+            throw new ForbiddenError('Something wrong happend!! Pls relogin')
+        }
+        if(keyStore.refreshToken !== refreshToken) throw new AuthFailureError('Shop not register')
+
+        const foundShop = await findShopByEmail({email})
+        if (!foundShop) throw new AuthFailureError('Shop not found')
+        // Create mot cap token moi
+        const tokens = await createTokenPair({ userID: foundShop._id, email }, holderToken.publicKey, holderToken.privateKey)
+        // update tokens
+        await holderToken.updateOne({
+            $set: {
+                
+                refreshToken: tokens.refreshToken
+            },
+            $addToSet: {
+                refreshTokensUsed: refreshToken
+            }
+        })
+
+        return {
+            user,
+            tokens
+        } 
     }
 
     /*

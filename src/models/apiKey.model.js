@@ -21,8 +21,8 @@ const apiKeySchema = new Schema({
     enum: ['0000', '1111', '2222']
   },
 }, {
-  collection: DOCUMENT_NAME,
+  collection: COLLECTION_NAME,
   timestamps: true
 })
 
-module.exports = model(COLLECTION_NAME, apiKeySchema)
+module.exports = model(DOCUMENT_NAME, apiKeySchema)
