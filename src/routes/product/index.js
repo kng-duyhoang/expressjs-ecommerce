@@ -8,6 +8,8 @@ const asyncHandle = require('../../helpers/asyncHandler')
 const { authentication } = require('../../auth/authUtils')
 
 router.get('/search/:keySearch', asyncHandle(productController.getListProductsByKeyword))
+router.get('/get', asyncHandle(productController.findAllProduct))
+router.get('/get/:product_id', asyncHandle(productController.findProductByID))
 
 router.use(authentication)
 // POST
