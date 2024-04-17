@@ -15,6 +15,16 @@ class ProductController {
         }).send(res)
     }
 
+    updateProduct = async (req, res, next) => {
+        new Success({
+            message: 'update Product Success',
+            metadata: await productFactory.updateProduct(req.body.product_type, req.params.productId, {
+                ...req.body,
+                product_shop: req.user.userID
+            })
+        }).send(res)
+    }
+
     publishProduct = async (req, res, next) => {
         new Success({
             message: 'publish Success',
@@ -37,7 +47,7 @@ class ProductController {
 
     getAllDarftForShop = async (req, res, next) => {
         new Success({
-            message: 'get Success',
+            message: 'get Draft list Success',
             metadata: await productFactory.findAllDraftForShop({
                 product_shop: req.user.userID
             })
@@ -46,7 +56,7 @@ class ProductController {
 
     getAllPublishForShop = async (req, res, next) => {
         new Success({
-            message: 'get Success',
+            message: 'get Publish list success Success',
             metadata: await productFactory.findAllPublishForShop({
                 product_shop: req.user.userID
             })
@@ -75,6 +85,7 @@ class ProductController {
             })
         }).send(res)
     }
+
 }
 
 module.exports = new ProductController()

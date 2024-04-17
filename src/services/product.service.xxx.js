@@ -2,7 +2,8 @@
 
 const { BadRequestError } = require('../core/error.response')
 const { product, clothing, electronic, furniture } = require('../models/product.model')
-const { queryProduct, publishProductByShop, unPublishProductByShop, searchProductByUser, findAllProduct, findProduct } = require('../models/repositories/product.repo')
+const { queryProduct, publishProductByShop, unPublishProductByShop, searchProductByUser, findAllProduct, findProduct, updateProductByID } = require('../models/repositories/product.repo')
+const { removeUnderfineValueInObject, updateNestedObject } = require('../utils')
 
 // define Factory
 class ProductFactory {
@@ -18,6 +19,14 @@ class ProductFactory {
         const productClass = ProductFactory.productRegistry[type]
         if (!productClass) throw new BadRequestError(`Invalid Product Types ${type}`)
         return new productClass(payload).createProduct()
+    }
+
+    // update Product
+
+    static async updateProduct(type, productID, payload) {
+        const productClass = ProductFactory.productRegistry[type]
+        if (!productClass) throw new BadRequestError(`Invalid Product Types ${type}`)
+        return new productClass(payload).updateProduct(productID)
     }
 
     // PUT //
@@ -36,7 +45,7 @@ class ProductFactory {
     }
 
     static async findAllPublishForShop({ product_shop, limit = 50, skip = 0 }) {
-        const query = { product_shop, isPublish: true }
+        const query = { product_shop, isDraft: true }
         return await queryProduct({ query, limit, skip })
     }
 
@@ -51,6 +60,7 @@ class ProductFactory {
     static async findProduct({product_id}) {
         return await findProduct({product_id, unSelect: ['__v', 'product_variations']})
     }
+
 }
 
 class Product {
@@ -78,6 +88,10 @@ class Product {
     async createProduct(product_id) {
         return await product.create({ ...this, _id: product_id })
     }
+
+    async updateProduct(productId, payload) {
+        return await updateProductByID({productId, payload, model: product})
+    }
 }
 
 class Clothing extends Product {
@@ -90,6 +104,22 @@ class Clothing extends Product {
         if (!newProduct) throw new BadRequestError('Create new product error!!')
 
         return newProduct
+    }
+
+    async updateProduct( productID ) {
+        // 1. remove attr has null value
+        const objectParams = removeUnderfineValueInObject(this)
+        // // 2. check update o cho nao
+        if (objectParams.product_attributes) {
+            await updateProductByID({
+                productId: productID,
+                payload: updateNestedObject(objectParams.product_attributes),
+                model: clothing
+            })
+        }
+
+        return await super.updateProduct(productID, updateNestedObject(objectParams))
+
     }
 }
 

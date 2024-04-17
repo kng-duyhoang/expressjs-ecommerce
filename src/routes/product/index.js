@@ -11,9 +11,11 @@ router.get('/search/:keySearch', asyncHandle(productController.getListProductsBy
 router.get('/get', asyncHandle(productController.findAllProduct))
 router.get('/get/:product_id', asyncHandle(productController.findProductByID))
 
+// Authen
 router.use(authentication)
 // POST
 router.post('/create', asyncHandle(productController.createProduct))
+router.patch('/update/:productId', asyncHandle(productController.updateProduct))
 router.post('/publish/:id', asyncHandle(productController.publishProduct))
 router.post('/unpublish/:id', asyncHandle(productController.unpublishProduct))
 // GET
