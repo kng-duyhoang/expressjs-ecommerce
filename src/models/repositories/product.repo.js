@@ -1,6 +1,6 @@
 'use strict'
 
-const { product,electronic,clothing,furniture } = require('../../models/product.model')
+const { product } = require('../../models/product.model')
 const { selectData, unGetSelectData } = require('../../utils')
 
 const queryProduct = async({query, limit, skip}) => {
@@ -60,7 +60,6 @@ const findAllProduct = async ({limit, sort, page, filter, select}) => {
     .limit(limit)
     .select(selectData(select))
     .lean()
-
 }
 
 const findProduct = async ({product_id, unSelect}) => {

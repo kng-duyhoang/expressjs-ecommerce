@@ -1,7 +1,9 @@
 'use strict'
 
-const { del } = require('express/lib/application.js')
 const _ = require('lodash')
+const {Types} = require('mongoose')
+
+const convertToObjectId = id => new Types.ObjectId(id)
 
 const getInforData = ({ fields = [], object = {} }) => {
     return _.pick(object, fields)
@@ -48,6 +50,7 @@ module.exports = {
     unGetSelectData,
     removeUnderfineValueInObject,
     updateNestedObject,
+    convertToObjectId,
     StatusCodes: require('./statusCodes.js'),
     ReasonPhrases: require('./reasonPhrases'),
 }

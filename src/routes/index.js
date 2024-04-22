@@ -10,6 +10,7 @@ router.use(permision('0000'))
 // check permision
 
 router.use('/v1/api/product', require('./product'))
+router.use('/v1/api/discount', require('./discount'))
 router.use('/v1/api', require('./access'))
 
 module.exports = router
