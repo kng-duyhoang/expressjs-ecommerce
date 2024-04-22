@@ -55,7 +55,7 @@ class ProductFactory {
     }
 
     static async findAllProduct({limit = 50, sort = 'ctime', page = 1, filter = {isPublish: true}}) {
-        return await findAllProduct({limit, sort, page, filter, select: ['product_name', 'product_price', 'product_thumb']})
+        return await findAllProduct({limit, sort, page, filter, select: []})
     }
 
     static async findProduct({product_id}) {

@@ -1,7 +1,7 @@
 'use strict'
 
 const { product } = require('../../models/product.model')
-const { selectData, unGetSelectData } = require('../../utils')
+const { selectData, unGetSelectData, convertToObjectId } = require('../../utils')
 
 const queryProduct = async({query, limit, skip}) => {
     return await product.find(query)
@@ -75,6 +75,12 @@ const updateProductByID = async ({
     return await model.findByIdAndUpdate( productId, payload, { new: isNew } )
 }
 
+const getProductById = async (productId) => {
+    return await product.findOne({
+        _id: convertToObjectId(productId),
+    }).lean()
+}
+
 module.exports = {
     queryProduct,
     publishProductByShop,
@@ -82,5 +88,6 @@ module.exports = {
     searchProductByUser,
     findAllProduct,
     findProduct,
-    updateProductByID
+    updateProductByID,
+    getProductById
 }
