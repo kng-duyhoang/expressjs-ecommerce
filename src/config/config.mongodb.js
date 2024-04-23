@@ -23,7 +23,8 @@ const dev = {
         usename: process.env.DEV_USERNAME,
         port: 27107,
         url: process.env.DEV_URL,
-        password: process.env.DEV_DB_PASSWORD
+        password: process.env.DEV_DB_PASSWORD,
+        dbName: process.env.DEV_DB_NAME
     }
 }
 

@@ -1,9 +1,9 @@
 'use strict'
 
 const mongoose = require('mongoose')
-const { db: { usename, url, password } } = require('../config/config.mongodb')
+const { db: { usename, url, password, dbName } } = require('../config/config.mongodb')
 
-const connectString = `mongodb+srv://${usename}:${password}@${url}/`
+const connectString = `mongodb+srv://${usename}:${password}@${url}?dbName=${dbName}`
 
 class Database {
     constructor() {
@@ -12,10 +12,8 @@ class Database {
 
     connect(type = "mongodb") {
         // dev
-        if (1 === 1) {
-            mongoose.set('debug', true)
-            mongoose.set('debug', { color: true })
-        }
+        mongoose.set('debug', true)
+        mongoose.set('debug', { color: true })
         mongoose.connect(connectString, {
             maxPoolSize: 50
         }).then(_ => {
