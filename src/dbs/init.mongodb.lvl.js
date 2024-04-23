@@ -3,7 +3,7 @@
 const mongoose = require('mongoose')
 const { db: { usename, url, password, dbName } } = require('../config/config.mongodb')
 
-const connectString = `mongodb+srv://${usename}:${password}@${url}?dbName=${dbName}`
+const connectString = `mongodb+srv://${usename}:${password}@${url}`
 
 class Database {
     constructor() {
@@ -14,7 +14,12 @@ class Database {
         // dev
         mongoose.set('debug', true)
         mongoose.set('debug', { color: true })
-        mongoose.connect(connectString, {
+        mongoose.connect(connectString, 
+            {
+                dbName: dbName,
+            } ,
+        
+            {
             maxPoolSize: 50
         }).then(_ => {
         })
