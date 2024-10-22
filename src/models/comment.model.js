@@ -18,4 +18,6 @@ const commentSchema = new Schema({
     collection: COLLECTION_NAME
 })
 
-module.exports = model(DOCUMENT_NAME, commentSchema)
+module.exports = {
+    comment: model(DOCUMENT_NAME, commentSchema)
+}
