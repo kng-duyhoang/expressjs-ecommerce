@@ -1,7 +1,7 @@
 'use strict'
 
 const { Created, Success } = require('../core/success.response')
-const { createComment, getCommentByParentId } = require('../services/comment.service')
+const { createComment, getCommentByParentId, deleteComment } = require('../services/comment.service')
 
 class CommentController {
   createComment = async ( req, res, next ) => {
@@ -15,6 +15,13 @@ class CommentController {
     new Success({
       message: "create comment success",
       metadata: await getCommentByParentId(req.query)
+    }).send(res)
+  }
+
+  deleteComment = async ( req, res, next ) => {
+    new Success({
+      message: "delete comment success",
+      metadata: await deleteComment(req.body)
     }).send(res)
   }
 }

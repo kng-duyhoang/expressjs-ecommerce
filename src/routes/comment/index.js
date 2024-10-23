@@ -10,4 +10,5 @@ const { authentication } = require('../../auth/authUtils')
 router.use(authentication)
 router.post('', asyncHandle(CommentController.createComment))
 router.get('', asyncHandle(CommentController.getCommentByParentId))
+router.delete('', asyncHandle(CommentController.deleteComment))
 module.exports = router
