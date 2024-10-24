@@ -2,8 +2,8 @@ const Redis = require('redis')
 
 class RedisPubSubServices {
   constructor() {
-    this.subscriber = Redis.createClient();
-    this.publisher = Redis.createClient();
+    this.subscriber = Redis.createClient(6379, 6379);
+    this.publisher = Redis.createClient(6379, 6379);
   }
 
   publish( channel, message ) {

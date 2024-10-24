@@ -15,7 +15,6 @@ app.use(express.urlencoded({
 }));
 // init DB
 require('./dbs/init.mongodb.lvl')
-
 // init Router
 app.use('/', require('./routes'))
 
