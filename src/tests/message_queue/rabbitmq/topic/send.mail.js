@@ -2,22 +2,25 @@ const ampqlib = require('amqplib');
 
 const connectStr = `amqp://guest:12345@localhost`
 
-const postVideo = async (msg) => {
+const sendEmail = async () => {
     try {
         const connect = await ampqlib.connect(connectStr); //create connect
         const channel = await connect.createChannel(); // create channel
-        const exchangeName = 'video' // create exchange
-        await channel.assertExchange(exchangeName, 'fanout', {
+        const exchangeName = 'send_email' // create exchange
+        await channel.assertExchange(exchangeName, 'topic', {
             durable: false
         })
+        const argv = process.argv.slice(2)
+        const msg = argv[1] || 'error'
+        const topic = argv[0]
         // Publish video
-        await channel.publish(exchangeName, '', Buffer.from(msg))
+        await channel.publish(exchangeName, topic, Buffer.from(msg))
         console.log(`Send OK:::`, msg);
 
         setTimeout(() => {
             connect.close();
             process.exit(0);
-        }, 5000);
+        }, 2000);
         
     } catch (error) {
         console.log(error);
@@ -25,5 +28,4 @@ const postVideo = async (msg) => {
     }
 }
 
-const msg = process.argv.slice(2).join(' ') || 'Hello';
-postVideo(msg);
+sendEmail();
