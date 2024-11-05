@@ -8,6 +8,7 @@ async function consumerOrderedProducer(params) {
     await channel.assertQueue(queueName, {
         durable: true
     })
+    // sắp xếp cac message đúng thứ tự
     channel.prefetch(1)
 
     channel.consume(queueName, msg => {
