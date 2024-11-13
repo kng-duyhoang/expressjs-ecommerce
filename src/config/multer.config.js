@@ -1,5 +1,5 @@
 'use strict'
-
+const fs = require('fs');
 const multer = require('multer')
 
 const uploadMemory = multer({
@@ -7,13 +7,15 @@ const uploadMemory = multer({
 })
 
 const uploadDisk = multer({
+  storage: multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, './src/uploads/'); // Directory where files will be stored
-      },
-      filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + '-' + file.originalname);
-      }
+      cb(null, './src/')
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, file.fieldname + '-' + uniqueSuffix + '-' + file.originalname);
+    }
+  })
 })
 
 module.exports = {

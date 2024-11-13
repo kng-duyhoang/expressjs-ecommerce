@@ -17,7 +17,6 @@ class UploadController {
         if (!file) {
             throw new BadRequestError('Not Found file')
         }
-        console.log(file);
         
         new Success({
             message: "Upload Success",
