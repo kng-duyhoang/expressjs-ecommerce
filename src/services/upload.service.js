@@ -1,22 +1,29 @@
 'use strict'
 
-const { cloudinary } = require("../config/config.cloudinary");
-
-const { S3, PutObjectCommand } = require("../config/s3.aws.config")
 const crypto = require('crypto')
+const { cloudinary } = require("../config/config.cloudinary")
+const { S3, PutObjectCommand, GetObjectCommand } = require("../config/s3.aws.config")
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')
+
+const createName = () => crypto.randomBytes(16).toString('hex')
+
 // Upload use S3 bucket
 const uploadImageFormLocalS3 = async ({file}) => {
     try {
-        const randomName = () => crypto.randomBytes(16).toString('hex')
+        const randomName = createName();
         const command = new PutObjectCommand({
             Bucket: process.env.AWS_BUCKET_NAME,
-            Key: randomName(),
+            Key: randomName,
             Body: file.buffer,
             ContentType: 'image/jpeg'
         })
-
-        const result = await S3.send( command )
-        return result
+        await S3.send( command )
+        const signedUrl = new GetObjectCommand({
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: randomName
+        })
+        const url = await getSignedUrl(S3, signedUrl, {expiresIn: 3600})
+        return url
     } catch (error) {
         console.error(error)
     }
