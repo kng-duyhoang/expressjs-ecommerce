@@ -2,6 +2,27 @@
 
 const { cloudinary } = require("../config/config.cloudinary");
 
+const { S3, PutObjectCommand } = require("../config/s3.aws.config")
+const crypto = require('crypto')
+// Upload use S3 bucket
+const uploadImageFormLocalS3 = async ({file}) => {
+    try {
+        const randomName = () => crypto.randomBytes(16).toString('hex')
+        const command = new PutObjectCommand({
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: randomName(),
+            Body: file.buffer,
+            ContentType: 'image/jpeg'
+        })
+
+        const result = await S3.send( command )
+        return result
+    } catch (error) {
+        console.error(error)
+    }
+}
+// end S3
+
 const uploadImageFormUrl = async () => {
     try {
         const urlImage = 'https://gratisography.com/wp-content/uploads/2024/10/gratisography-cool-cat-800x525.jpg';
@@ -18,8 +39,6 @@ const uploadImageFormLocal = async ({
     path,
     folderName = 'product/888'
 }) => {
-    console.log(path);
-    
     try {
         const result = await cloudinary.uploader.upload(path, {
             public_id: 'thumb',
@@ -40,5 +59,6 @@ const uploadImageFormLocal = async ({
 
 module.exports = {
     uploadImageFormUrl,
-    uploadImageFormLocal
+    uploadImageFormLocal,
+    uploadImageFormLocalS3
 }

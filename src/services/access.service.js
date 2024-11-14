@@ -33,7 +33,6 @@ class AccessService {
         const foundShop = await findShopByEmail({ email })
         if (!foundShop) throw new AuthFailureError('Shop not registed 2')
 
-
         const tokens = await createTokenPair({ userID: foundShop._id, email }, keyStore.publicKey, keyStore.privateKey)
         await keyStore.updateOne({
             $set: {
