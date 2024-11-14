@@ -3,7 +3,9 @@
 const crypto = require('crypto')
 const { cloudinary } = require("../config/config.cloudinary")
 const { S3, PutObjectCommand, GetObjectCommand } = require("../config/s3.aws.config")
-const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')
+const { getSignedUrl } = require("@aws-sdk/cloudfront-signer");
+// const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')
+const cloudFront = process.env.AWS_CLOUD_FRONT
 
 const createName = () => crypto.randomBytes(16).toString('hex')
 
@@ -17,13 +19,24 @@ const uploadImageFormLocalS3 = async ({file}) => {
             Body: file.buffer,
             ContentType: 'image/jpeg'
         })
-        await S3.send( command )
-        const signedUrl = new GetObjectCommand({
-            Bucket: process.env.AWS_BUCKET_NAME,
-            Key: randomName
-        })
-        const url = await getSignedUrl(S3, signedUrl, {expiresIn: 3600})
-        return url
+        const result = await S3.send( command )
+        // const signedUrl = new GetObjectCommand({
+        //     Bucket: process.env.AWS_BUCKET_NAME,
+        //     Key: randomName
+        // })
+        // const url = await getSignedUrl(S3, signedUrl, {expiresIn: 3600})
+        /* Cloudfront signed */
+        const urlSigned = getSignedUrl({
+            url: `${cloudFront}/${randomName}`,
+            keyPairId: process.env.AWS_CLOUD_FRONT_PUBLIC_KEY,
+            dateLessThan: new Date( Date.now() + 1000*60 ), //het han trong 60s
+            privateKey: process.env.AWS_BUCKET_PRIVATE_KEY,
+          });
+        
+        return {
+            url: urlSigned,
+            result
+        }
     } catch (error) {
         console.error(error)
     }
