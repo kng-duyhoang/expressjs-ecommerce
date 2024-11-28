@@ -2,7 +2,6 @@
 
 const { StatusCodes, ReasonPhrases } = require("../utils")
 
-
 class SuccessStatusResponse {
     constructor({
         message,

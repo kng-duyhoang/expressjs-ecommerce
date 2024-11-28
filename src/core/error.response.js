@@ -1,20 +1,11 @@
 'use strict'
-
 const { StatusCodes, ReasonPhrases } = require("../utils")
-const myLogger = require('../logger/mylog')
 class ErrorResponse extends Error {
     constructor(message, status) {
         super(message)
         this.status = status
-        // myLogger.error(this.message, {
-        //     context: '/path',
-        //     requestId: '1111',
-        //     message: this.message,
-        //     metadata: {},
-        // })
-        myLogger.error(this.message, ['v1/api', 'v1123', {error: 'wrong'}])
-        myLogger.log(this.message, ['v1/api', 'v1123', {error: 'wrong'}])
     }
+
 }
 
 class ConflictRequestError extends ErrorResponse {

@@ -2,6 +2,7 @@
 
 const { createLogger, transports, format } = require('winston');
 require('winston-daily-rotate-file');
+
 class Mylogger {
     constructor() {
         const formatPrint = format.printf(
@@ -16,7 +17,7 @@ class Mylogger {
                 format.timestamp( {format: 'YYYY-MM-DD HH:mm:ss'}),
                 formatPrint
             ),
-            transport: [
+            transports: [
                 new transports.Console(),
                 new transports.DailyRotateFile({
                     dirname: 'src/logs',
@@ -56,7 +57,7 @@ class Mylogger {
             [context, req, metadata] = params;
         }
 
-        const requestId = req.requestId || 'unknown'
+        const requestId = req?.requestId || 'unknown'
         return {
             requestId,
             context,
@@ -64,15 +65,15 @@ class Mylogger {
         }
     }
 
-    log(messages, params) {
+    log(message, params) {
         const paramLog = this.commonParams(params);
-        const logObject = Object.assign({messages}, paramLog)
-        this.logger.info(logObject)
+        const logObject = Object.assign({message}, paramLog)
+        this.logger.info(logObject);
     }
-    error(messages, params) {
+    error(message, params) {
         const paramLog = this.commonParams(params);
-        const logObject = Object.assign({messages}, paramLog)
-        this.logger.error(logObject)
+        const logObject = Object.assign({message}, paramLog);
+        this.logger.error(logObject);
     }
 }
 
