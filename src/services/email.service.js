@@ -53,8 +53,6 @@ class EmailService {
     }) {
         
         try {
-            console.log(html);
-            console.log(emailTo);
             const options = {
                 from: {
                     name: 'GOldz',

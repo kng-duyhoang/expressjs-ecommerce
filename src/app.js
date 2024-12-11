@@ -36,8 +36,6 @@ app.use('/', require('./routes'))
 app.use((err, req, res, next) => {
     const statusCode = err.status || 500
     const errMsg = `${err.status} - ${Date.now()}ms - Res: ${JSON.stringify(err)}`
-    console.log(errMsg);
-    
     myLogger.error(errMsg, [
         req.path,
         {requestId: req.requestId},

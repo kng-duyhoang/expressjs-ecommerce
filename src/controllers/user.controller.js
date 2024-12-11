@@ -9,8 +9,11 @@ class UserController {
         }).send(res)
     }
 
-    checkRegisterEmailToken = async () => {
-        
+    checkLoginEmailToken = async (req, res, next) => {
+        return new Success({
+            message: "craete success",
+            metadata: await userService.checkLoginTokenService(req.query)
+        }).send(res)
     }
 }
 
