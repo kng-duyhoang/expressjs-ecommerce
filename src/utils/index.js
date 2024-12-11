@@ -44,7 +44,15 @@ const updateNestedObject = obj => {
     return final
 }
 
+const replacePlaceholder = (template, params) => {
+    Object.keys(params).forEach( key => {
+        const placeholder = `{{${key}}}`
+        template = template.replace( new RegExp(placeholder, 'g'), params[key])
+    })
+}
+
 module.exports = {
+    replacePlaceholder,
     getInforData,
     selectData,
     unGetSelectData,
